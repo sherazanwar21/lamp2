@@ -1,0 +1,57 @@
+---
+- name: Install lamp server #linux apache2 mysql php 
+  hosts: all    #ec2-3-142-186-26=UBUNTU |||||||||||||| ec2-18-221-212-250=LINUX
+  become: yes
+  tasks:
+    - name: install httpd for linux
+      yum:
+        name: httpd
+        state: present
+      when: ansible_os_family in ["RedHat", "Amazon"]
+
+    - name: install apache2 for ubuntu
+      apt:
+        name: apache2
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: import key gpg key
+      rpm_key:
+        state: present
+        key: https://repo.mysql.com/RPM-GPG-KEY-mysql
+      when: ansible_os_family in ["RedHat", "Amazon"]
+    
+    - name: download RPM file for mysql for linux 
+      get_url:
+        url: https://repo.mysql.com//mysql57-community-release-el7-11.noarch.rpm
+        dest: /tmp/mysql57-community-release-el7-11.noarch.rpm
+      when: ansible_os_family in ["RedHat", "Amazon"]
+      
+    - name: install mysql communitiy server
+      yum:
+        name: /tmp/mysql57-community-release-el7-11.noarch.rpm
+        state: present
+      when: ansible_os_family in ["RedHat", "Amazon"]
+
+    - name: install mysql service for linux
+      yum:
+        name: mysql-community-server
+        state: present
+      when: ansible_os_family in ["RedHat", "Amazon"]
+
+    - name: install mysql on ubuntu
+      apt:
+        name: mysql-server
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: install php for linux/ubuntu
+      package:
+        name: php
+        state: present
+        
+      
+      
+
+
+    
